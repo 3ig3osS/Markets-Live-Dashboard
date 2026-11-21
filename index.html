@@ -8,7 +8,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
-<title>Markets Live Dashboard</title>
+<title>Markets Live Dashboard v1.0.1</title>
 <style>
 :root{color-scheme:dark;--bg:#0b1220;--panel:#111c2e;--panel2:#16243a;--text:#edf3fc;--muted:#91a2bb;--line:#26364d;--green:#35d39a;--red:#ff6878;--yellow:#f5c76b;--blue:#70a9ff}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 20% 0%,#1b3150 0,transparent 45%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom);min-height:100vh}
@@ -18,7 +18,7 @@ main{max-width:1040px;margin:auto;padding:20px 0 36px}.top{display:flex;justify-
 <body>
 <main>
 <header class="top">
- <div class="brand"><div class="logo">📈</div><div><div class="eyebrow">MARKET MONITOR • US EQUITIES</div><div class="title">Markets Live Dashboard</div></div></div>
+ <div class="brand"><div class="logo">📈</div><div><div class="eyebrow">MARKET MONITOR • US EQUITIES • v1.0.1</div><div class="title">Markets Live Dashboard</div></div></div>
  <div class="actions"><button class="btn" id="installBtn" hidden>ติดตั้งแอป</button><button class="btn" id="refreshBtn">↻ รีเฟรช</button></div>
 </header>
 <div class="statusbar"><span class="dot" id="dot"></span><span id="status">กำลังเตรียมระบบ…</span><span id="marketState"></span><span id="updated"></span></div>
@@ -27,7 +27,7 @@ main{max-width:1040px;margin:auto;padding:20px 0 36px}.top{display:flex;justify-
  <article class="panel market"><div class="label">S&amp;P 500</div><div class="price" id="spx-price">—</div><div class="change neutral" id="spx-change">รอข้อมูล</div><div class="sub" id="spx-time">—</div></article>
  <article class="panel market"><div class="label">NASDAQ COMPOSITE</div><div class="price" id="ixic-price">—</div><div class="change neutral" id="ixic-change">รอข้อมูล</div><div class="sub" id="ixic-time">—</div></article>
  <article class="panel wide"><h2 class="section-title">Fear &amp; Greed — ตลาดหุ้นสหรัฐฯ</h2><div class="gauge-wrap"><svg class="gauge" viewBox="0 0 220 142" role="img" aria-label="Fear and Greed gauge"><path id="arc" d="" fill="none" stroke="#334155" stroke-width="15" stroke-linecap="round"/><path id="progress" d="" fill="none" stroke="#f87171" stroke-width="15" stroke-linecap="round"/><text class="score" id="fg-score" x="110" y="101" text-anchor="middle">—</text><text class="zone" id="fg-zone" x="110" y="123" text-anchor="middle">รอข้อมูล</text></svg></div><div class="legend"><span style="--c:#ef4444">Extreme Fear</span><span style="--c:#fb923c">Fear</span><span style="--c:#94a3b8">Neutral</span><span style="--c:#4ade80">Greed</span><span style="--c:#16a34a">Extreme Greed</span></div><div class="sub" id="fg-source">แหล่งข้อมูล: —</div></article>
- <article class="panel"><h2 class="section-title">ภาพรวมระบบข้อมูล</h2><div class="metrics"><div class="metric"><small>ดัชนีที่อัปเดต</small><b id="quote-health">0/3</b></div><div class="metric"><small>Fear &amp; Greed</small><b id="fg-health">—</b></div><div class="metric"><small>รอบอัปเดต</small><b>60 วินาที</b></div><div class="metric"><small>โหมด</small><b>Auto</b></div></div></article>
+ <article class="panel"><h2 class="section-title">ภาพรวมระบบข้อมูล</h2><div class="metrics"><div class="metric"><small>ดัชนีที่อัปเดต</small><b id="quote-health">0/3</b></div><div class="metric"><small>Fear &amp; Greed</small><b id="fg-health">—</b></div><div class="metric"><small>รอบอัปเดต</small><b>2 นาที</b></div><div class="metric"><small>โหมด</small><b>Auto</b></div></div></article>
  <article class="panel wide"><h2 class="section-title">วิธีอ่านข้อมูล</h2><div class="feed"><strong>Fear &amp; Greed</strong> แสดงดัชนีความเชื่อมั่นหุ้นสหรัฐฯ จาก CNN เท่านั้น หาก CNN ไม่พร้อม ระบบจะแสดง “ไม่มีข้อมูล” และจะไม่สลับไปใช้ดัชนีคริปโต เพื่อป้องกันการตีความผิดประเภท<br><strong>ราคา</strong> ดึงจาก Yahoo Finance ผ่านบริการ CORS proxy สาธารณะ ซึ่งอาจมีข้อจำกัดด้านความพร้อมใช้งานและความล่าช้า ไม่ใช่ข้อมูลซื้อขายแบบ tick-by-tick</div></article>
 </section>
 <div class="footer">ข้อมูลเพื่อประกอบการศึกษา ไม่ใช่คำแนะนำการลงทุน • เวลาอัปเดตและแหล่งข้อมูลจะแสดงตามผลการดึงข้อมูลจริง<br>ติดตั้งได้เมื่อเปิดผ่านเว็บไซต์ HTTPS หรือ localhost (ไม่สามารถติดตั้ง PWA จากการเปิดไฟล์ HTML โดยตรง)</div>
@@ -62,11 +62,25 @@ async function fetchWithTimeout(url,ms=9000){
  finally{clearTimeout(id)}
 }
 async function fetchYahoo(ticker){
- const target='https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?range=5d&interval=1d';
- const proxies=['https://corsproxy.io/?url='+encodeURIComponent(target),'https://api.allorigins.win/raw?url='+encodeURIComponent(target)];
+ const path='/v8/finance/chart/'+ticker+'?range=5d&interval=1d';
+ const targets=[
+  'https://query1.finance.yahoo.com'+path,
+  'https://query2.finance.yahoo.com'+path
+ ];
+ const urls=[];
+ for(const target of targets){
+  urls.push('https://corsproxy.io/?url='+encodeURIComponent(target));
+  urls.push('https://api.allorigins.win/raw?url='+encodeURIComponent(target));
+ }
  let err;
- for(const url of proxies){try{return await fetchWithTimeout(url)}catch(e){err=e}}
- throw err||Error('No data');
+ for(const url of urls){
+  try{
+   const data=await fetchWithTimeout(url,12000);
+   if(!data?.chart?.result?.[0]?.meta?.regularMarketPrice)throw Error('Yahoo returned no quote');
+   return data;
+  }catch(e){err=e}
+ }
+ throw err||Error('All quote sources failed');
 }
 async function updateQuotes(){
  let ok=0;
@@ -79,18 +93,31 @@ async function updateQuotes(){
    if(Number.isFinite(prev)&&prev>0){const pct=(price/prev-1)*100,el=$(s.id+'-change');el.className='change '+(pct>=0?'up':'down');el.textContent=(pct>=0?'▲ ':'▼ ')+Math.abs(pct).toFixed(2)+'%';}
    $(''+s.id+'-time').textContent='Yahoo Finance • '+new Date().toLocaleTimeString('th-TH');
    ok++;
-  }catch(e){$(s.id+'-change').textContent='ดึงข้อมูลไม่สำเร็จ';$(s.id+'-change').className='change neutral';}
+  }catch(e){
+   const el=$(s.id+'-change');el.textContent='อัปเดตไม่สำเร็จ • '+(e?.message||'network');el.className='change neutral';
+   const stamp=$(s.id+'-time');if(stamp.textContent==='—')stamp.textContent='ยังไม่มีข้อมูลราคา';
+  }
  }));
  lastQuoteOK=ok;$('quote-health').textContent=ok+'/3';
  return ok;
 }
 async function updateFG(){
- try{
-  const j=await fetchWithTimeout('https://production.dataviz.cnn.io/index/fearandgreed/graphdata');
-  const v=j?.fear_and_greed?.score;
-  if(typeof v!=='number'||!Number.isFinite(v)||v<0||v>100)throw Error('Invalid CNN score');
-  renderFG(v,'CNN Fear & Greed');lastFGOK=true;$('fg-health').textContent='พร้อม';return true;
- }catch(e){$('fg-score').textContent='—';$('fg-zone').textContent='ไม่มีข้อมูล';$('fg-source').textContent='CNN Fear & Greed ไม่พร้อมใช้งาน — ไม่มีการใช้ดัชนีคริปโตแทน';lastFGOK=false;$('fg-health').textContent='ไม่พร้อม';return false;}
+ const target='https://production.dataviz.cnn.io/index/fearandgreed/graphdata';
+ const urls=[target,
+  'https://corsproxy.io/?url='+encodeURIComponent(target),
+  'https://api.allorigins.win/raw?url='+encodeURIComponent(target)];
+ let err;
+ for(const url of urls){
+  try{
+   const j=await fetchWithTimeout(url,12000);
+   const v=j?.fear_and_greed?.score;
+   if(typeof v!=='number'||!Number.isFinite(v)||v<0||v>100)throw Error('Invalid CNN score');
+   renderFG(v,'CNN Fear & Greed');lastFGOK=true;$('fg-health').textContent='พร้อม';return true;
+  }catch(e){err=e}
+ }
+ $('fg-score').textContent='—';$('fg-zone').textContent='ไม่มีข้อมูล';
+ $('fg-source').textContent='CNN Fear & Greed เชื่อมต่อไม่ได้ ('+(err?.message||'network error')+') — ไม่มีการใช้ดัชนีคริปโตแทน';
+ lastFGOK=false;$('fg-health').textContent='ไม่พร้อม';return false;
 }
 async function refresh(){
  if(busy)return;busy=true;$('refreshBtn').disabled=true;status('กำลังอัปเดตข้อมูล…');
@@ -108,6 +135,6 @@ $('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;def
 window.addEventListener('appinstalled',()=>{$('installBtn').hidden=true;status('ติดตั้งแอปแล้ว','ok')});
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 $('marketState').textContent='• '+marketSession();
-refresh();timer=setInterval(refresh,60000);
+refresh();timer=setInterval(refresh,120000);
 </script>
 </body></html>
